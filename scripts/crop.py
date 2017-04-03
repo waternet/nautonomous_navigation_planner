@@ -1,9 +1,11 @@
 from PIL import Image
 import pyproj
-import yaml
+import yaml, os
 
 from nav_msgs.msg import *
 from std_msgs.msg import *
+
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 def fromWgsToRd(coords):
         
@@ -62,13 +64,13 @@ def toFloatCordinate(line):
 	return output
 
 def crop(cropped):
-	with open("/home/ubuntu/ROS/nautonomous_ws4/src/WaternetNautonomous/WaternetNautonomousNavigation/nautonomous_navigation_planner/scripts/total.yaml") as f:
+	with open(os.path.join(__location__, 'total.yaml')) as f:
 		map_data = yaml.safe_load(f)
 
 	resolution = map_data["resolution"]
 	origin = map_data["origin"]
 
-	test_image = "/home/ubuntu/ROS/nautonomous_ws4/src/WaternetNautonomous/WaternetNautonomousNavigation/nautonomous_navigation_planner/scripts/utm_amsterdam.png"
+	test_image = os.path.join(__location__, 'utm_amsterdam.png')
 	original = Image.open(test_image)
 
 	cropped[0][0] += 100
@@ -84,7 +86,7 @@ def crop(cropped):
 	#print "INFO: ", int(left), int(top), int(right), int(bottom)
 	
 	cropped_example = original.crop((int(left), int(top), int(right), int(bottom)))
-	cropped_example.save("/home/ubuntu/ROS/nautonomous_ws4/src/WaternetNautonomous/WaternetNautonomousNavigation/nautonomous_navigation_planner/scripts/amsterdam.png")
+	cropped_example.save(os.path.join(__location__, "amsterdam.png"))
 
 	map_data["image"] = "amsterdam.png"
 
@@ -92,7 +94,7 @@ def crop(cropped):
 	width = -3000 + int(left) / 2
 
 	map_data["origin"] = [width, height, 0.0]
-	with open("/home/ubuntu/ROS/nautonomous_ws4/src/WaternetNautonomous/WaternetNautonomousNavigation/nautonomous_navigation_planner/scripts/amsterdam.yaml", "w") as f:
+	with open(os.path.join(__location__, "amsterdam.yaml"), "w") as f:
 		yaml.dump(map_data, f)
 
 def run(full):
